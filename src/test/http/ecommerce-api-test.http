@@ -1,0 +1,237 @@
+### E-Commerce API 테스트
+### IntelliJ IDEA에서 각 요청 옆의 ▶ 버튼을 클릭하여 실행할 수 있습니다.
+
+### 변수 설정
+@host = http://localhost:8080
+@contentType = application/json
+
+### ============================================
+### 상품(Product) API
+### ============================================
+
+### 1. 모든 상품 조회
+GET {{host}}/api/products
+Accept: {{contentType}}
+
+### 2. 특정 상품 조회 (ID: 1)
+GET {{host}}/api/products/1
+Accept: {{contentType}}
+
+### 3. 카테고리별 상품 조회
+GET {{host}}/api/products/category/전자제품
+Accept: {{contentType}}
+
+### 4. 상품 검색 (키워드: 노트북)
+GET {{host}}/api/products/search?keyword=노트북
+Accept: {{contentType}}
+
+### 5. 새 상품 추가
+POST {{host}}/api/products
+Content-Type: {{contentType}}
+
+{
+  "name": "스마트워치",
+  "description": "최신 스마트워치 GPS 내장",
+  "price": 350000,
+  "stock": 25,
+  "category": "전자제품",
+  "imageUrl": "https://example.com/smartwatch.jpg"
+}
+
+### 6. 상품 정보 수정 (ID: 1)
+PUT {{host}}/api/products/1
+Content-Type: {{contentType}}
+
+{
+  "name": "노트북 Pro 15 (할인)",
+  "description": "고성능 15인치 노트북 - 특별 할인",
+  "price": 1200000,
+  "stock": 45,
+  "category": "전자제품",
+  "imageUrl": "https://example.com/laptop-sale.jpg"
+}
+
+### 7. 상품 삭제 (ID: 11)
+DELETE {{host}}/api/products/11
+
+### ============================================
+### 장바구니(Cart) API
+### ============================================
+
+### 8. 장바구니 조회
+GET {{host}}/api/cart
+Accept: {{contentType}}
+Cookie: JSESSIONID=test-session-id
+
+### 9. 장바구니에 상품 추가 (노트북)
+POST {{host}}/api/cart/add
+Content-Type: {{contentType}}
+Cookie: JSESSIONID=test-session-id
+
+{
+  "productId": 1,
+  "quantity": 2
+}
+
+### 10. 장바구니에 상품 추가 (마우스)
+POST {{host}}/api/cart/add
+Content-Type: {{contentType}}
+Cookie: JSESSIONID=test-session-id
+
+{
+  "productId": 2,
+  "quantity": 3
+}
+
+### 11. 장바구니에 상품 추가 (키보드)
+POST {{host}}/api/cart/add
+Content-Type: {{contentType}}
+Cookie: JSESSIONID=test-session-id
+
+{
+  "productId": 3,
+  "quantity": 1
+}
+
+### 12. 장바구니 아이템 수량 수정
+PUT {{host}}/api/cart/update/1?quantity=5
+Cookie: JSESSIONID=test-session-id
+
+### 13. 장바구니 아이템 삭제 (수량을 0으로)
+PUT {{host}}/api/cart/update/2?quantity=0
+Cookie: JSESSIONID=test-session-id
+
+### 14. 장바구니 비우기
+DELETE {{host}}/api/cart/clear
+Cookie: JSESSIONID=test-session-id
+
+### ============================================
+### 주문(Order) API
+### ============================================
+
+### 15. 장바구니에 테스트용 상품 추가 (주문 테스트 준비)
+POST {{host}}/api/cart/add
+Content-Type: {{contentType}}
+Cookie: JSESSIONID=order-test-session
+
+{
+  "productId": 1,
+  "quantity": 1
+}
+
+### 16. 주문 생성
+POST {{host}}/api/orders
+Content-Type: {{contentType}}
+Cookie: JSESSIONID=order-test-session
+
+{
+  "customerName": "홍길동",
+  "customerEmail": "hong@example.com",
+  "shippingAddress": "서울시 강남구 테헤란로 123"
+}
+
+### 17. 주문 조회 (ID: 1)
+GET {{host}}/api/orders/1
+Accept: {{contentType}}
+
+### 18. 이메일로 주문 조회
+GET {{host}}/api/orders/customer/hong@example.com
+Accept: {{contentType}}
+
+### 19. 주문 상태 변경 (ID: 1을 PROCESSING으로)
+PUT {{host}}/api/orders/1/status?status=PROCESSING
+
+### 20. 주문 상태 변경 (ID: 1을 SHIPPED로)
+PUT {{host}}/api/orders/1/status?status=SHIPPED
+
+### 21. 주문 상태 변경 (ID: 1을 DELIVERED로)
+PUT {{host}}/api/orders/1/status?status=DELIVERED
+
+### ============================================
+### 시나리오 테스트: 전체 구매 플로우
+### ============================================
+
+### Step 1: 상품 목록 확인
+GET {{host}}/api/products
+Accept: {{contentType}}
+
+### Step 2: 장바구니에 여러 상품 추가
+POST {{host}}/api/cart/add
+Content-Type: {{contentType}}
+Cookie: JSESSIONID=full-test-session
+
+{
+  "productId": 5,
+  "quantity": 2
+}
+
+### Step 3: 장바구니에 추가 상품
+POST {{host}}/api/cart/add
+Content-Type: {{contentType}}
+Cookie: JSESSIONID=full-test-session
+
+{
+  "productId": 7,
+  "quantity": 1
+}
+
+### Step 4: 장바구니 확인
+GET {{host}}/api/cart
+Accept: {{contentType}}
+Cookie: JSESSIONID=full-test-session
+
+### Step 5: 주문 생성
+POST {{host}}/api/orders
+Content-Type: {{contentType}}
+Cookie: JSESSIONID=full-test-session
+
+{
+  "customerName": "김철수",
+  "customerEmail": "kim@example.com",
+  "shippingAddress": "부산시 해운대구 우동 123-45"
+}
+
+### Step 6: 주문 확인
+GET {{host}}/api/orders/customer/kim@example.com
+Accept: {{contentType}}
+
+### ============================================
+### 에러 케이스 테스트
+### ============================================
+
+### 존재하지 않는 상품 조회
+GET {{host}}/api/products/9999
+Accept: {{contentType}}
+
+### 잘못된 데이터로 상품 생성 (가격 누락)
+POST {{host}}/api/products
+Content-Type: {{contentType}}
+
+{
+  "name": "잘못된 상품",
+  "description": "가격이 없는 상품",
+  "stock": 10,
+  "category": "테스트"
+}
+
+### 빈 장바구니로 주문 시도
+POST {{host}}/api/orders
+Content-Type: {{contentType}}
+Cookie: JSESSIONID=empty-cart-session
+
+{
+  "customerName": "실패 테스트",
+  "customerEmail": "fail@example.com",
+  "shippingAddress": "테스트 주소"
+}
+
+### 유효하지 않은 이메일로 주문
+POST {{host}}/api/orders
+Content-Type: {{contentType}}
+Cookie: JSESSIONID=test-session-id
+
+{
+  "customerName": "이메일 오류",
+  "customerEmail": "invalid-email",
+  "shippingAddress": "테스트 주소"
+}

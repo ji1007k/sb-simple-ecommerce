@@ -1,0 +1,86 @@
+### 빠른 테스트용 HTTP 파일
+### 자주 사용하는 API들을 모아놓은 파일입니다.
+
+@host = http://localhost:8080
+
+### 🔍 상품 목록 조회
+GET {{host}}/api/products
+
+###
+
+### 🛒 장바구니 조회 (세션 필요)
+GET {{host}}/api/cart
+Cookie: JSESSIONID=quick-test
+
+###
+
+### ➕ 장바구니에 노트북 추가
+POST {{host}}/api/cart/add
+Content-Type: application/json
+Cookie: JSESSIONID=quick-test
+
+{
+  "productId": 1,
+  "quantity": 1
+}
+
+###
+
+### ➕ 장바구니에 마우스 추가
+POST {{host}}/api/cart/add
+Content-Type: application/json
+Cookie: JSESSIONID=quick-test
+
+{
+  "productId": 2,
+  "quantity": 2
+}
+
+###
+
+### 📦 주문하기
+POST {{host}}/api/orders
+Content-Type: application/json
+Cookie: JSESSIONID=quick-test
+
+{
+  "customerName": "테스트 사용자",
+  "customerEmail": "test@example.com",
+  "shippingAddress": "서울시 강남구 테스트로 123"
+}
+
+###
+
+### 📋 내 주문 조회
+GET {{host}}/api/orders/customer/test@example.com
+
+###
+
+### 🗑️ 장바구니 비우기
+DELETE {{host}}/api/cart/clear
+Cookie: JSESSIONID=quick-test
+
+###
+
+### ✨ 새 상품 추가
+POST {{host}}/api/products
+Content-Type: application/json
+
+{
+  "name": "태블릿 PC",
+  "description": "10인치 태블릿",
+  "price": 650000,
+  "stock": 30,
+  "category": "전자제품",
+  "imageUrl": "https://example.com/tablet.jpg"
+}
+
+###
+
+### 🔍 카테고리로 검색
+GET {{host}}/api/products/category/의류
+
+###
+
+### 🔍 키워드로 검색
+GET {{host}}/api/products/search?keyword=무선

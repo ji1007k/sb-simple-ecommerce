@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple E-Commerce</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+        
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .product-card {
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 15px;
+            background: #f9f9f9;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        
+        .product-name {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .product-price {
+            color: #667eea;
+            font-size: 1.1em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .product-stock {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: opacity 0.3s;
+            width: 100%;
+        }
+        
+        button:hover {
+            opacity: 0.9;
+        }
+        
+        .cart-section {
+            background: #f0f0f0;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 30px;
+        }
+        
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background: white;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+        
+        .total {
+            font-size: 1.3em;
+            font-weight: bold;
+            text-align: right;
+            margin-top: 15px;
+            color: #333;
+        }
+        
+        .order-form {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+            font-weight: bold;
+        }
+        
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+        
+        .message {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            text-align: center;
+        }
+        
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🛒 Simple E-Commerce Store</h1>
+        
+        <div id="message"></div>
+        
+        <h2>상품 목록</h2>
+        <div id="products" class="products-grid"></div>
+        
+        <div class="cart-section">
+            <h2>🛍️ 장바구니</h2>
+            <div id="cart"></div>
+            <div class="total" id="total"></div>
+            
+            <div class="order-form">
+                <h3>주문 정보</h3>
+                <div class="form-group">
+                    <label for="customerName">이름:</label>
+                    <input type="text" id="customerName" placeholder="주문자 이름">
+                </div>
+                <div class="form-group">
+                    <label for="customerEmail">이메일:</label>
+                    <input type="email" id="customerEmail" placeholder="email@example.com">
+                </div>
+                <div class="form-group">
+                    <label for="shippingAddress">배송 주소:</label>
+                    <input type="text" id="shippingAddress" placeholder="배송받을 주소">
+                </div>
+                <button onclick="placeOrder()">주문하기</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let cart = [];
+        
+        // 상품 목록 로드
+        async function loadProducts() {
+            try {
+                const response = await fetch('/api/products');
+                const products = await response.json();
+                displayProducts(products);
+            } catch (error) {
+                showMessage('상품을 불러오는데 실패했습니다.', 'error');
+            }
+        }
+        
+        // 상품 표시
+        function displayProducts(products) {
+            const container = document.getElementById('products');
+            container.innerHTML = products.map(product => `
+                <div class="product-card">
+                    <div class="product-name">${product.name}</div>
+                    <div class="product-description">${product.description}</div>
+                    <div class="product-price">₩${product.price.toLocaleString()}</div>
+                    <div class="product-stock">재고: ${product.stock}개</div>
+                    <button onclick="addToCart(${product.id}, '${product.name}', ${product.price})">
+                        장바구니에 추가
+                    </button>
+                </div>
+            `).join('');
+        }
+        
+        // 장바구니에 추가
+        async function addToCart(productId, productName, price) {
+            try {
+                const response = await fetch('/api/cart/add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        productId: productId,
+                        quantity: 1
+                    })
+                });
+                
+                if (response.ok) {
+                    // 로컬 장바구니 업데이트
+                    const existingItem = cart.find(item => item.id === productId);
+                    if (existingItem) {
+                        existingItem.quantity += 1;
+                    } else {
+                        cart.push({
+                            id: productId,
+                            name: productName,
+                            price: price,
+                            quantity: 1
+                        });
+                    }
+                    updateCartDisplay();
+                    showMessage(`${productName}이(가) 장바구니에 추가되었습니다!`, 'success');
+                }
+            } catch (error) {
+                showMessage('장바구니 추가에 실패했습니다.', 'error');
+            }
+        }
+        
+        // 장바구니 표시 업데이트
+        function updateCartDisplay() {
+            const cartContainer = document.getElementById('cart');
+            const totalContainer = document.getElementById('total');
+            
+            if (cart.length === 0) {
+                cartContainer.innerHTML = '<p>장바구니가 비어있습니다.</p>';
+                totalContainer.innerHTML = '';
+                return;
+            }
+            
+            cartContainer.innerHTML = cart.map(item => `
+                <div class="cart-item">
+                    <span>${item.name} x ${item.quantity}</span>
+                    <span>₩${(item.price * item.quantity).toLocaleString()}</span>
+                </div>
+            `).join('');
+            
+            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            totalContainer.innerHTML = `총 금액: ₩${total.toLocaleString()}`;
+        }
+        
+        // 주문하기
+        async function placeOrder() {
+            const customerName = document.getElementById('customerName').value;
+            const customerEmail = document.getElementById('customerEmail').value;
+            const shippingAddress = document.getElementById('shippingAddress').value;
+            
+            if (!customerName || !customerEmail || !shippingAddress) {
+                showMessage('모든 주문 정보를 입력해주세요.', 'error');
+                return;
+            }
+            
+            if (cart.length === 0) {
+                showMessage('장바구니가 비어있습니다.', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/orders', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        customerName: customerName,
+                        customerEmail: customerEmail,
+                        shippingAddress: shippingAddress
+                    })
+                });
+                
+                if (response.ok) {
+                    const order = await response.json();
+                    showMessage(`주문이 완료되었습니다! 주문번호: ${order.id}`, 'success');
+                    cart = [];
+                    updateCartDisplay();
+                    // 폼 초기화
+                    document.getElementById('customerName').value = '';
+                    document.getElementById('customerEmail').value = '';
+                    document.getElementById('shippingAddress').value = '';
+                } else {
+                    showMessage('주문 처리 중 오류가 발생했습니다.', 'error');
+                }
+            } catch (error) {
+                showMessage('주문 처리에 실패했습니다.', 'error');
+            }
+        }
+        
+        // 메시지 표시
+        function showMessage(message, type) {
+            const messageContainer = document.getElementById('message');
+            messageContainer.innerHTML = `<div class="message ${type}">${message}</div>`;
+            setTimeout(() => {
+                messageContainer.innerHTML = '';
+            }, 3000);
+        }
+        
+        // 페이지 로드 시 상품 목록 불러오기
+        loadProducts();
+    </script>
+</body>
+</html>
