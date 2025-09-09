@@ -24,6 +24,8 @@ public class Cart {
     
     private String sessionId;
     
+    private String customerEmail;
+    
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JsonManagedReference
     @Builder.Default

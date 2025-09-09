@@ -5,12 +5,14 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.BatchSize;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "products")
+@BatchSize(size = 50)  // N+1 문제 해결을 위한 배치 사이즈 설정
 @Data
 @Builder
 @NoArgsConstructor
@@ -41,7 +43,8 @@ public class Product {
     private LocalDateTime createdAt;
     
     @Version
-    private Long version;  // 낙관적 락을 위한 버전 필드
+    @Builder.Default
+    private Long version = 0L;  // 낙관적 락을 위한 버전 필드
     
     @PrePersist
     protected void onCreate() {
