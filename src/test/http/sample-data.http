@@ -1,0 +1,98 @@
+### 샘플 데이터 API 테스트
+### 개발 환경: http://localhost:8080
+
+### 1. 현재 샘플 데이터 상태 조회
+GET {{baseUrl}}/api/sample-data
+Accept: application/json
+
+### 2. 소규모 샘플 데이터 생성 (빠른 테스트용)
+### 상품 1만개, 주문 5천개, 장바구니 1천개
+POST {{baseUrl}}/api/sample-data/small
+Content-Type: application/json
+
+### 3. 상품 샘플 데이터 생성 (기본 10만개)
+POST {{baseUrl}}/api/sample-data/products
+Content-Type: application/json
+
+### 4. 상품 샘플 데이터 생성 (사용자 지정 개수)
+POST {{baseUrl}}/api/sample-data/products?count=1000
+Content-Type: application/json
+
+### 5. 주문 샘플 데이터 생성 (기본 5만개)
+POST {{baseUrl}}/api/sample-data/orders
+Content-Type: application/json
+
+### 6. 주문 샘플 데이터 생성 (사용자 지정 개수)
+POST {{baseUrl}}/api/sample-data/orders?count=100
+Content-Type: application/json
+
+### 7. 장바구니 샘플 데이터 생성 (기본 1만개)
+POST {{baseUrl}}/api/sample-data/carts
+Content-Type: application/json
+
+### 8. 장바구니 샘플 데이터 생성 (사용자 지정 개수)
+POST {{baseUrl}}/api/sample-data/carts?count=5000
+Content-Type: application/json
+
+### 9. 대용량 샘플 데이터 생성 (전체)
+### 상품 100만개, 주문 50만개, 장바구니 10만개
+### ⚠️ 주의: 시간이 오래 걸립니다!
+POST {{baseUrl}}/api/sample-data/bulk
+Content-Type: application/json
+
+### 10. 일반 대용량 샘플 데이터 생성
+POST {{baseUrl}}/api/sample-data
+Content-Type: application/json
+
+### 11. 샘플 데이터 삭제 (개발용)
+### TODO: 아직 구현되지 않음
+DELETE {{baseUrl}}/api/sample-data
+Content-Type: application/json
+
+### ================================================================
+### 단계별 추천 테스트 시나리오
+### ================================================================
+
+### [시나리오 1] 처음 시작 - 소규모 테스트
+POST {{baseUrl}}/api/sample-data/small
+
+###
+
+### [시나리오 2] 상태 확인
+GET {{baseUrl}}/api/sample-data
+
+###
+
+### [시나리오 3] 상품 데이터 추가 (중간 규모)
+POST {{baseUrl}}/api/sample-data/products?count=100000
+
+###
+
+### [시나리오 4] 주문 데이터 추가 (중간 규모)
+POST {{baseUrl}}/api/sample-data/orders?count=50000
+
+###
+
+### [시나리오 5] 최종 상태 확인
+GET {{baseUrl}}/api/sample-data
+
+###
+
+### ================================================================
+### 성능 테스트용 시나리오
+### ================================================================
+
+### [성능 테스트 1] 대용량 상품 데이터
+POST {{baseUrl}}/api/sample-data/products?count=500000
+
+###
+
+### [성능 테스트 2] 대용량 주문 데이터 
+POST {{baseUrl}}/api/sample-data/orders?count=250000
+
+###
+
+### [성능 테스트 3] 최종 확인
+GET {{baseUrl}}/api/sample-data
+
+###

@@ -3,341 +3,425 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simple E-Commerce</title>
+    <title>Excel Download Test</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
             padding: 20px;
+            background-color: #f5f5f5;
         }
         
         .container {
-            max-width: 1200px;
-            margin: 0 auto;
             background: white;
-            border-radius: 15px;
             padding: 30px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
         
         h1 {
+            color: #333;
             text-align: center;
-            color: #333;
-            margin-bottom: 30px;
-            font-size: 2.5em;
-        }
-        
-        .products-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 20px;
             margin-bottom: 30px;
         }
         
-        .product-card {
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
             border: 1px solid #ddd;
-            border-radius: 10px;
-            padding: 15px;
-            background: #f9f9f9;
-            transition: transform 0.3s, box-shadow 0.3s;
+            border-radius: 5px;
         }
         
-        .product-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-        }
-        
-        .product-name {
-            font-size: 1.2em;
-            font-weight: bold;
-            color: #333;
-            margin-bottom: 10px;
-        }
-        
-        .product-price {
-            color: #667eea;
-            font-size: 1.1em;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-        
-        .product-stock {
-            color: #666;
-            font-size: 0.9em;
-            margin-bottom: 10px;
+        .section h2 {
+            color: #444;
+            margin-top: 0;
         }
         
         button {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #007bff;
             color: white;
             border: none;
             padding: 10px 20px;
             border-radius: 5px;
             cursor: pointer;
-            font-size: 1em;
-            transition: opacity 0.3s;
-            width: 100%;
+            margin: 5px;
+            font-size: 14px;
         }
         
         button:hover {
-            opacity: 0.9;
+            background: #0056b3;
         }
         
-        .cart-section {
-            background: #f0f0f0;
-            padding: 20px;
-            border-radius: 10px;
-            margin-top: 30px;
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
         }
         
-        .cart-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px;
-            background: white;
-            margin-bottom: 10px;
-            border-radius: 5px;
+        .danger {
+            background: #dc3545;
         }
         
-        .total {
-            font-size: 1.3em;
-            font-weight: bold;
-            text-align: right;
-            margin-top: 15px;
-            color: #333;
-        }
-        
-        .order-form {
-            background: #f9f9f9;
-            padding: 20px;
-            border-radius: 10px;
-            margin-top: 20px;
-        }
-        
-        .form-group {
-            margin-bottom: 15px;
-        }
-        
-        label {
-            display: block;
-            margin-bottom: 5px;
-            color: #333;
-            font-weight: bold;
-        }
-        
-        input {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 1em;
-        }
-        
-        .message {
-            padding: 10px;
-            margin: 10px 0;
-            border-radius: 5px;
-            text-align: center;
+        .danger:hover {
+            background: #c82333;
         }
         
         .success {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
+            background: #28a745;
         }
         
-        .error {
+        .success:hover {
+            background: #218838;
+        }
+        
+        .progress-container {
+            margin-top: 20px;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: #007bff;
+            transition: width 0.3s ease;
+            border-radius: 10px;
+        }
+        
+        .log {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 15px;
+            height: 200px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 12px;
+            white-space: pre-wrap;
+        }
+        
+        .status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 3px;
+            font-size: 12px;
+            margin: 5px;
+        }
+        
+        .status.connected {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status.disconnected {
             background: #f8d7da;
             color: #721c24;
-            border: 1px solid #f5c6cb;
+        }
+        
+        input[type="number"] {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            width: 100px;
+            margin-right: 10px;
+        }
+        
+        .queue-status {
+            background: #e7f1ff;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        
+        .download-link {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        
+        .download-link:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🛒 Simple E-Commerce Store</h1>
+        <h1>🚀 Excel Download 성능 개선 테스트</h1>
         
-        <div id="message"></div>
+        <!-- WebSocket 연결 상태 -->
+        <div class="section">
+            <h2>📡 WebSocket 연결</h2>
+            <span id="wsStatus" class="status disconnected">연결 해제됨</span>
+            <button onclick="connectWebSocket()">연결</button>
+            <button onclick="disconnectWebSocket()">연결 해제</button>
+        </div>
         
-        <h2>상품 목록</h2>
-        <div id="products" class="products-grid"></div>
-        
-        <div class="cart-section">
-            <h2>🛍️ 장바구니</h2>
-            <div id="cart"></div>
-            <div class="total" id="total"></div>
+        <!-- 테스트 데이터 관리 -->
+        <div class="section">
+            <h2>📊 테스트 데이터 관리</h2>
+            <p>현재 데이터 개수: <span id="dataCount">로딩 중...</span></p>
             
-            <div class="order-form">
-                <h3>주문 정보</h3>
-                <div class="form-group">
-                    <label for="customerName">이름:</label>
-                    <input type="text" id="customerName" placeholder="주문자 이름">
-                </div>
-                <div class="form-group">
-                    <label for="customerEmail">이메일:</label>
-                    <input type="email" id="customerEmail" placeholder="email@example.com">
-                </div>
-                <div class="form-group">
-                    <label for="shippingAddress">배송 주소:</label>
-                    <input type="text" id="shippingAddress" placeholder="배송받을 주소">
-                </div>
-                <button onclick="placeOrder()">주문하기</button>
+            <input type="number" id="generateCount" value="10000" min="1000" max="100000" step="1000">
+            <button onclick="generateData()">데이터 생성</button>
+            <button onclick="refreshDataCount()">개수 조회</button>
+            <button onclick="clearAllData()" class="danger">전체 삭제</button>
+        </div>
+        
+        <!-- 다운로드 테스트 -->
+        <div class="section">
+            <h2>📥 다운로드 테스트</h2>
+            <button onclick="downloadPaging()" class="success">기존 방식 (페이징)</button>
+            <button onclick="downloadStreaming()" class="success">개선 방식 (스트리밍)</button>
+            
+            <div class="queue-status">
+                <strong>큐 상태:</strong> 
+                대기 중: <span id="queueSize">0</span>, 
+                처리 중: <span id="processingCount">0</span>, 
+                최대 동시 처리: <span id="maxConcurrent">3</span>
             </div>
+        </div>
+        
+        <!-- 진행률 표시 -->
+        <div class="section">
+            <h2>📈 다운로드 진행률</h2>
+            <div id="progressContainer" class="progress-container" style="display: none;">
+                <p id="progressMessage">준비 중...</p>
+                <div class="progress-bar">
+                    <div id="progressFill" class="progress-fill" style="width: 0%"></div>
+                </div>
+                <p id="progressDetails"></p>
+                <div id="downloadLinkContainer" style="display: none;">
+                    <a id="downloadLink" href="#" class="download-link">📁 다운로드</a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 로그 -->
+        <div class="section">
+            <h2>📋 로그</h2>
+            <div id="log" class="log"></div>
+            <button onclick="clearLog()">로그 지우기</button>
         </div>
     </div>
 
     <script>
-        let cart = [];
+        let ws = null;
+        let sessionId = 'session-' + Math.random().toString(36).substr(2, 9);
         
-        // 상품 목록 로드
-        async function loadProducts() {
-            try {
-                const response = await fetch('/api/products');
-                const products = await response.json();
-                displayProducts(products);
-            } catch (error) {
-                showMessage('상품을 불러오는데 실패했습니다.', 'error');
+        // 페이지 로드 시 초기화
+        window.onload = function() {
+            refreshDataCount();
+            refreshQueueStatus();
+            connectWebSocket();
+            setInterval(refreshQueueStatus, 5000); // 5초마다 큐 상태 갱신
+        };
+        
+        // WebSocket 연결
+        function connectWebSocket() {
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                log('이미 WebSocket에 연결되어 있습니다.');
+                return;
+            }
+            
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsUrl = `${protocol}//${window.location.host}/ws/download-progress`;
+            
+            ws = new WebSocket(wsUrl);
+            
+            ws.onopen = function() {
+                updateWSStatus(true);
+                log('WebSocket 연결됨');
+            };
+            
+            ws.onmessage = function(event) {
+                const progress = JSON.parse(event.data);
+                updateProgress(progress);
+                log(`진행률 수신: ${progress.requestId} - ${progress.progressPercentage}%`);
+            };
+            
+            ws.onclose = function() {
+                updateWSStatus(false);
+                log('WebSocket 연결 해제됨');
+            };
+            
+            ws.onerror = function(error) {
+                log('WebSocket 오류: ' + error);
+            };
+        }
+        
+        // WebSocket 연결 해제
+        function disconnectWebSocket() {
+            if (ws) {
+                ws.close();
             }
         }
         
-        // 상품 표시
-        function displayProducts(products) {
-            const container = document.getElementById('products');
-            container.innerHTML = products.map(product => `
-                <div class="product-card">
-                    <div class="product-name">${product.name}</div>
-                    <div class="product-description">${product.description}</div>
-                    <div class="product-price">₩${product.price.toLocaleString()}</div>
-                    <div class="product-stock">재고: ${product.stock}개</div>
-                    <button onclick="addToCart(${product.id}, '${product.name}', ${product.price})">
-                        장바구니에 추가
-                    </button>
-                </div>
-            `).join('');
+        // WebSocket 상태 업데이트
+        function updateWSStatus(connected) {
+            const status = document.getElementById('wsStatus');
+            status.textContent = connected ? '연결됨' : '연결 해제됨';
+            status.className = 'status ' + (connected ? 'connected' : 'disconnected');
         }
         
-        // 장바구니에 추가
-        async function addToCart(productId, productName, price) {
+        // 데이터 생성
+        async function generateData() {
+            const count = document.getElementById('generateCount').value;
+            log(`${count}건 데이터 생성 시작...`);
+            
             try {
-                const response = await fetch('/api/cart/add', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        productId: productId,
-                        quantity: 1
-                    })
+                const response = await fetch(`/api/sample-data/generate?count=${count}`, {
+                    method: 'POST'
                 });
+                const result = await response.json();
                 
                 if (response.ok) {
-                    // 로컬 장바구니 업데이트
-                    const existingItem = cart.find(item => item.id === productId);
-                    if (existingItem) {
-                        existingItem.quantity += 1;
-                    } else {
-                        cart.push({
-                            id: productId,
-                            name: productName,
-                            price: price,
-                            quantity: 1
-                        });
-                    }
-                    updateCartDisplay();
-                    showMessage(`${productName}이(가) 장바구니에 추가되었습니다!`, 'success');
-                }
-            } catch (error) {
-                showMessage('장바구니 추가에 실패했습니다.', 'error');
-            }
-        }
-        
-        // 장바구니 표시 업데이트
-        function updateCartDisplay() {
-            const cartContainer = document.getElementById('cart');
-            const totalContainer = document.getElementById('total');
-            
-            if (cart.length === 0) {
-                cartContainer.innerHTML = '<p>장바구니가 비어있습니다.</p>';
-                totalContainer.innerHTML = '';
-                return;
-            }
-            
-            cartContainer.innerHTML = cart.map(item => `
-                <div class="cart-item">
-                    <span>${item.name} x ${item.quantity}</span>
-                    <span>₩${(item.price * item.quantity).toLocaleString()}</span>
-                </div>
-            `).join('');
-            
-            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-            totalContainer.innerHTML = `총 금액: ₩${total.toLocaleString()}`;
-        }
-        
-        // 주문하기
-        async function placeOrder() {
-            const customerName = document.getElementById('customerName').value;
-            const customerEmail = document.getElementById('customerEmail').value;
-            const shippingAddress = document.getElementById('shippingAddress').value;
-            
-            if (!customerName || !customerEmail || !shippingAddress) {
-                showMessage('모든 주문 정보를 입력해주세요.', 'error');
-                return;
-            }
-            
-            if (cart.length === 0) {
-                showMessage('장바구니가 비어있습니다.', 'error');
-                return;
-            }
-            
-            try {
-                const response = await fetch('/api/orders', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        customerName: customerName,
-                        customerEmail: customerEmail,
-                        shippingAddress: shippingAddress
-                    })
-                });
-                
-                if (response.ok) {
-                    const order = await response.json();
-                    showMessage(`주문이 완료되었습니다! 주문번호: ${order.id}`, 'success');
-                    cart = [];
-                    updateCartDisplay();
-                    // 폼 초기화
-                    document.getElementById('customerName').value = '';
-                    document.getElementById('customerEmail').value = '';
-                    document.getElementById('shippingAddress').value = '';
+                    log(`데이터 생성 완료: ${result.message}`);
+                    refreshDataCount();
                 } else {
-                    showMessage('주문 처리 중 오류가 발생했습니다.', 'error');
+                    log(`데이터 생성 실패: ${result.error}`);
                 }
             } catch (error) {
-                showMessage('주문 처리에 실패했습니다.', 'error');
+                log(`데이터 생성 오류: ${error.message}`);
             }
         }
         
-        // 메시지 표시
-        function showMessage(message, type) {
-            const messageContainer = document.getElementById('message');
-            messageContainer.innerHTML = `<div class="message ${type}">${message}</div>`;
-            setTimeout(() => {
-                messageContainer.innerHTML = '';
-            }, 3000);
+        // 데이터 개수 조회
+        async function refreshDataCount() {
+            try {
+                const response = await fetch('/api/sample-data/count');
+                const result = await response.json();
+                document.getElementById('dataCount').textContent = result.count.toLocaleString();
+            } catch (error) {
+                log(`데이터 개수 조회 오류: ${error.message}`);
+            }
         }
         
-        // 페이지 로드 시 상품 목록 불러오기
-        loadProducts();
+        // 모든 데이터 삭제
+        async function clearAllData() {
+            if (!confirm('정말로 모든 데이터를 삭제하시겠습니까?')) {
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/sample-data/clear', {
+                    method: 'DELETE'
+                });
+                const result = await response.json();
+                
+                if (response.ok) {
+                    log(`데이터 삭제 완료: ${result.message}`);
+                    refreshDataCount();
+                } else {
+                    log(`데이터 삭제 실패: ${result.error}`);
+                }
+            } catch (error) {
+                log(`데이터 삭제 오류: ${error.message}`);
+            }
+        }
+        
+        // 페이징 방식 다운로드
+        async function downloadPaging() {
+            await requestDownload('/api/download/excel/paging', '기존 방식 (페이징)');
+        }
+        
+        // 스트리밍 방식 다운로드
+        async function downloadStreaming() {
+            await requestDownload('/api/download/excel/streaming', '개선 방식 (스트리밍)');
+        }
+        
+        // 다운로드 요청
+        async function requestDownload(url, method) {
+            log(`${method} 다운로드 요청...`);
+            
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'X-Session-ID': sessionId
+                    }
+                });
+                const result = await response.json();
+                
+                if (response.ok) {
+                    log(`다운로드 요청 성공: ${result.message}`);
+                    showProgress();
+                    refreshQueueStatus();
+                } else {
+                    log(`다운로드 요청 실패: ${result.error}`);
+                }
+            } catch (error) {
+                log(`다운로드 요청 오류: ${error.message}`);
+            }
+        }
+        
+        // 큐 상태 조회
+        async function refreshQueueStatus() {
+            try {
+                const response = await fetch('/api/download/queue/status');
+                const status = await response.json();
+                
+                document.getElementById('queueSize').textContent = status.queueSize;
+                document.getElementById('processingCount').textContent = status.processingCount;
+                document.getElementById('maxConcurrent').textContent = status.maxConcurrentDownloads;
+            } catch (error) {
+                // 조용히 실패 (에러 로그 생략)
+            }
+        }
+        
+        // 진행률 표시
+        function showProgress() {
+            document.getElementById('progressContainer').style.display = 'block';
+            document.getElementById('progressFill').style.width = '0%';
+            document.getElementById('progressMessage').textContent = '다운로드 준비 중...';
+            document.getElementById('progressDetails').textContent = '';
+            document.getElementById('downloadLinkContainer').style.display = 'none';
+        }
+        
+        // 진행률 업데이트
+        function updateProgress(progress) {
+            document.getElementById('progressFill').style.width = progress.progressPercentage + '%';
+            document.getElementById('progressMessage').textContent = progress.message;
+            
+            if (progress.totalCount > 0) {
+                document.getElementById('progressDetails').textContent = 
+                    `처리됨: ${progress.processedCount.toLocaleString()} / ${progress.totalCount.toLocaleString()}`;
+            }
+            
+            if (progress.status === 'COMPLETED' && progress.downloadUrl) {
+                const linkContainer = document.getElementById('downloadLinkContainer');
+                const link = document.getElementById('downloadLink');
+                link.href = progress.downloadUrl;
+                linkContainer.style.display = 'block';
+            }
+            
+            refreshQueueStatus();
+        }
+        
+        // 로그 추가
+        function log(message) {
+            const logElement = document.getElementById('log');
+            const timestamp = new Date().toLocaleTimeString();
+            logElement.textContent += `[${timestamp}] ${message}\n`;
+            logElement.scrollTop = logElement.scrollHeight;
+        }
+        
+        // 로그 지우기
+        function clearLog() {
+            document.getElementById('log').textContent = '';
+        }
+        
+        // 페이지 언로드 시 WebSocket 정리
+        window.onbeforeunload = function() {
+            if (ws) {
+                ws.close();
+            }
+        };
     </script>
 </body>
 </html>
