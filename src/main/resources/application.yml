@@ -1,0 +1,145 @@
+# 공통 설정
+spring:
+  application:
+    name: simple-ecommerce
+
+  # 프로파일 기본값
+  profiles:
+    active: dev
+
+  # JPA 공통 설정
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true  # N+1 문제 분석을 위해 포맷팅 활성화
+        use_sql_comments: true  # SQL에 주석 추가
+        # Batch Insert 최적화
+        jdbc:
+          batch_size: 1000
+          batch_versioned_data: true
+        order_inserts: true
+        order_updates: true
+        # 통계 수집
+        generate_statistics: true
+
+  # Redis 설정 (공통)
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      timeout: 3000ms
+
+# 로깅 설정
+logging:
+  level:
+    com.jikim.ecommerce: DEBUG
+    org.springframework.web.socket: DEBUG
+    org.springframework.web.servlet.resource: WARN
+    org.springframework.web.servlet.handler: WARN
+    org.hibernate.SQL: DEBUG  # SQL 쿼리 출력
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE  # 파라미터 출력
+    org.hibernate.stat: DEBUG  # 통계 정보 출력
+    org.hibernate.engine.internal.StatisticalLoggingSessionEventListener: INFO  # 세션 통계
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+
+# 서버 설정
+server:
+  port: 8080
+
+# 다운로드 설정
+download:
+  directory: downloads/
+  max-concurrent: 3
+  batch-size: 1000
+
+---
+# 테스트 프로파일
+spring:
+  config:
+    activate:
+      on-profile: test
+
+  # H2 Database 설정 (테스트용)
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+
+  # H2 Console 설정
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+---
+# 개발 프로파일
+spring:
+  config:
+    activate:
+      on-profile: dev
+
+  # PostgreSQL Database 설정 (개발용)
+  datasource:
+    url: jdbc:postgresql://localhost:5432/ec_db
+    driver-class-name: org.postgresql.Driver
+    username: ec_user
+    password: ec_pwd
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 5
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: false
+        show_sql: false
+
+---
+# 운영 프로파일
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+  # PostgreSQL Database 설정 (운영용)
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/ec_db}
+    driver-class-name: org.postgresql.Driver
+    username: ${DB_USERNAME:ec_user}
+    password: ${DB_PASSWORD:ec_pwd}
+    hikari:
+      maximum-pool-size: 50
+      minimum-idle: 10
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: false
+
+  # 운영 로깅 설정
+  logging:
+    level:
+      com.jikim.ecommerce: INFO
+      org.springframework.web.socket: WARN
