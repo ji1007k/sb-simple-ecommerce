@@ -54,6 +54,15 @@ download:
   max-concurrent: 3
   batch-size: 1000
 
+# Excel 보안 설정 (CVE-2025-48924 대응)
+excel:
+  security:
+    max-file-size: 100MB
+    max-rows: 1000000
+    max-columns: 1000
+    enable-strict-validation: true
+  max-file-size: 100MB
+
 ---
 # 테스트 프로파일
 spring:
