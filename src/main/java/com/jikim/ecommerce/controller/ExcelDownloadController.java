@@ -17,6 +17,8 @@ import java.io.File;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 @RestController
 @RequestMapping("/api/download")
@@ -38,10 +40,14 @@ public class ExcelDownloadController {
             if (sessionId == null) {
                 sessionId = "default-session";
             }
-            
-            String requestId = excelDownloadService.requestDownload(
-                    DownloadRequest.DownloadType.PAGING, sessionId);
-            
+
+            String requestId = UUID.randomUUID().toString();
+            String finalSessionId = sessionId;
+            CompletableFuture.runAsync(() -> {
+                excelDownloadService.requestDownload(
+                        DownloadRequest.DownloadType.PAGING, finalSessionId, requestId);
+            });
+
             return ResponseEntity.ok(Map.of(
                     "requestId", requestId,
                     "message", "다운로드 요청이 큐에 추가되었습니다. WebSocket으로 진행률을 확인하세요."
@@ -64,9 +70,13 @@ public class ExcelDownloadController {
             if (sessionId == null) {
                 sessionId = "default-session";
             }
-            
-            String requestId = excelDownloadService.requestDownload(
-                    DownloadRequest.DownloadType.STREAMING, sessionId);
+
+            String requestId = UUID.randomUUID().toString();
+            String finalSessionId = sessionId;
+            CompletableFuture.runAsync(() -> {
+                excelDownloadService.requestDownload(
+                        DownloadRequest.DownloadType.PAGING, finalSessionId, requestId);
+            });
             
             return ResponseEntity.ok(Map.of(
                     "requestId", requestId,

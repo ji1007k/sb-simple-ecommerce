@@ -37,8 +37,7 @@ public class ExcelDownloadService {
     /**
      * 다운로드 요청 처리 (큐에 추가)
      */
-    public String requestDownload(DownloadRequest.DownloadType downloadType, String sessionId) {
-        String requestId = UUID.randomUUID().toString();
+    public String requestDownload(DownloadRequest.DownloadType downloadType, String sessionId, String requestId) {
         String fileName = String.format("sample_data_%s_%s.xlsx", downloadType.name().toLowerCase(), requestId);
         
         DownloadRequest request = DownloadRequest.builder()
