@@ -26,10 +26,13 @@ dependencies {
     implementation 'org.springframework.retry:spring-retry'
     implementation 'org.springframework:spring-aspects'
     
-    // Excel processing
-    implementation 'org.apache.poi:poi:5.2.4'
-    implementation 'org.apache.poi:poi-ooxml:5.2.4'
-    implementation 'org.apache.poi:poi-ooxml-lite:5.2.4'
+    // Excel processing - 최신 보안 패치 적용된 버전
+    implementation 'org.apache.poi:poi:5.4.1'
+    implementation 'org.apache.poi:poi-ooxml:5.4.1'
+
+    // POI 전이 의존성에 의한 보안 취약점 해결을 위한 의존성 강제 업데이트 (오버라이드됨)
+    // +) 적용 확인 명령어: ./gradlew dependencyInsight --dependency commons-lang3
+    implementation 'org.apache.commons:commons-lang3:3.18.0'
     
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
