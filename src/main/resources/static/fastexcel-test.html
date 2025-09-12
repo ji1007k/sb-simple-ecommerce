@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>FastExcel Test</title>
+    <style>
+        body { font-family: Arial; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; }
+        .progress { margin: 10px 0; }
+        .log { background: #f5f5f5; padding: 10px; height: 300px; overflow-y: scroll; }
+        button { padding: 8px 15px; margin: 5px; }
+    </style>
+</head>
+<body>
+    <h1>🔥 FastExcel 테스트</h1>
+    
+    <div class="test-section">
+        <h3>1. 단일 요청 테스트</h3>
+        <button onclick="testSingle()">FastExcel Single 테스트</button>
+        <div id="single-progress" class="progress"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>2. 청크 방식 테스트</h3>
+        <button onclick="testChunked()">FastExcel Chunked 테스트</button>
+        <div id="chunked-progress" class="progress"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>3. 🔥 3개 동시 요청 테스트 (핵심!)</h3>
+        <button onclick="testConcurrent()">3개 동시 테스트</button>
+        <div id="concurrent-progress" class="progress"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>실시간 로그</h3>
+        <div id="log" class="log"></div>
+        <button onclick="clearLog()">로그 지우기</button>
+    </div>
+
+    <script>
+        const log = document.getElementById('log');
+        
+        function addLog(message) {
+            const time = new Date().toLocaleTimeString();
+            log.innerHTML += `[${time}] ${message}<br>`;
+            log.scrollTop = log.scrollHeight;
+        }
+        
+        function clearLog() {
+            log.innerHTML = '';
+        }
+        
+        function connectWebSocket(sessionId, progressElementId) {
+            const ws = new WebSocket(`ws://localhost:8080/ws/download-progress?sessionId=${sessionId}`);
+            
+            ws.onopen = function() {
+                addLog(`WebSocket 연결: ${sessionId}`);
+            };
+            
+            ws.onmessage = function(event) {
+                const progress = JSON.parse(event.data);
+                const progressElement = document.getElementById(progressElementId);
+                
+                if (progress.status === 'PROCESSING') {
+                    const percent = progress.progressPercentage || 0;
+                    progressElement.innerHTML = `진행률: ${percent}% (${progress.processedCount}건 처리)`;
+                    addLog(`${sessionId}: ${percent}% 완료`);
+                } else if (progress.status === 'COMPLETED') {
+                    progressElement.innerHTML = `✅ 완료! <a href="${progress.downloadUrl}" target="_blank">다운로드</a>`;
+                    addLog(`${sessionId}: 완료! ${progress.downloadUrl}`);
+                } else if (progress.status === 'FAILED') {
+                    progressElement.innerHTML = `❌ 실패: ${progress.message}`;
+                    addLog(`${sessionId}: 실패 - ${progress.message}`);
+                } else {
+                    progressElement.innerHTML = `상태: ${progress.status}`;
+                    addLog(`${sessionId}: ${progress.status}`);
+                }
+            };
+            
+            ws.onerror = function(error) {
+                addLog(`WebSocket 오류: ${sessionId} - ${error}`);
+            };
+            
+            ws.onclose = function() {
+                addLog(`WebSocket 연결 종료: ${sessionId}`);
+            };
+            
+            return ws;
+        }
+        
+        async function testSingle() {
+            addLog('🚀 FastExcel Single 테스트 시작');
+            const sessionId = 'fastexcel-single-test';
+            
+            // WebSocket 연결
+            connectWebSocket(sessionId, 'single-progress');
+            
+            // API 호출
+            try {
+                const response = await fetch('/api/fastexcel/single', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ sessionId: sessionId })
+                });
+                
+                const result = await response.json();
+                addLog(`API 응답: ${result.message}`);
+                
+            } catch (error) {
+                addLog(`API 오류: ${error.message}`);
+            }
+        }
+        
+        async function testChunked() {
+            addLog('🚀 FastExcel Chunked 테스트 시작');
+            const sessionId = 'fastexcel-chunked-test';
+            
+            connectWebSocket(sessionId, 'chunked-progress');
+            
+            try {
+                const response = await fetch('/api/fastexcel/chunked', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ sessionId: sessionId })
+                });
+                
+                const result = await response.json();
+                addLog(`API 응답: ${result.message}`);
+                
+            } catch (error) {
+                addLog(`API 오류: ${error.message}`);
+            }
+        }
+        
+        async function testConcurrent() {
+            addLog('🔥 3개 동시 테스트 시작!!!');
+            
+            // 각각 WebSocket 연결
+            connectWebSocket('concurrent-test-1', 'concurrent-progress');
+            connectWebSocket('concurrent-test-2', 'concurrent-progress');
+            connectWebSocket('concurrent-test-3', 'concurrent-progress');
+            
+            try {
+                const response = await fetch('/api/fastexcel/concurrent-test', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                
+                const result = await response.json();
+                addLog(`동시 테스트 API 응답: ${result.message}`);
+                document.getElementById('concurrent-progress').innerHTML = '3개 요청 모두 시작됨. 로그에서 진행률 확인하세요.';
+                
+            } catch (error) {
+                addLog(`동시 테스트 오류: ${error.message}`);
+            }
+        }
+    </script>
+</body>
+</html>

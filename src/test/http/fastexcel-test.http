@@ -1,0 +1,53 @@
+### 🔥 FastExcel 테스트 시나리오
+
+### 1단계: FastExcel 단일 쿼리 방식 테스트 (22만건)
+POST http://localhost:8080/api/fastexcel/single
+Content-Type: application/json
+
+{
+  "sessionId": "fastexcel-single-test"
+}
+
+### 2단계: FastExcel 청크 방식 테스트 (22만건을 1만건씩 나누어 처리)
+POST http://localhost:8080/api/fastexcel/chunked
+Content-Type: application/json
+
+{
+  "sessionId": "fastexcel-chunked-test"
+}
+
+### 3단계: 🔥 핵심 테스트 - 3개 동시 요청 (22만건 × 3개)
+POST http://localhost:8080/api/fastexcel/concurrent-test
+
+### 4단계: 기존 방식과 비교 테스트
+### (기존 Apache POI 방식)
+POST http://localhost:8080/api/download/excel/streaming
+Content-Type: application/json
+X-Session-ID: poi-comparison-test
+
+### 5단계: 파일 다운로드 테스트 (완료 후)
+GET http://localhost:8080/api/download/file/{{fileName}}
+
+### 6단계: 메모리 사용량 확인용 - 연속 요청
+POST http://localhost:8080/api/fastexcel/chunked
+Content-Type: application/json
+
+{
+  "sessionId": "memory-test-1"
+}
+
+###
+POST http://localhost:8080/api/fastexcel/chunked
+Content-Type: application/json
+
+{
+  "sessionId": "memory-test-2"
+}
+
+###
+POST http://localhost:8080/api/fastexcel/chunked
+Content-Type: application/json
+
+{
+  "sessionId": "memory-test-3"
+}
